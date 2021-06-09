@@ -1,0 +1,273 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="">
+  <meta property="og:type" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content="">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <meta name="theme-color" content="#fafafa">
+
+  <script src="js/jquery.js"></script> 
+  <script src="js/vendor/modernizr-3.11.2.min.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+
+  <style>
+    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+    .string { color: darkorange; }
+    .number { color: red; }
+    .boolean { color: blue; }
+    .null { color: magenta; }
+    .key { color: green; }
+
+    .checkboxes {text-align:left;}
+    .checkboxes input{margin: 0px 5px 0px 0px;}
+    .checkboxes label{margin: 0px 20px 0px 3px;}
+    </style>
+</head>
+
+<body>
+
+  <script>
+
+    var peripherals={"ETH":{"functions":["ETXEN","ERXD1","ERXD0","ERXERR","EMDC","ETXD0","ERXDV","ERXCLK","ETXD1","EMDIO"]},
+    "HSUART": {"functions":["HSU1TX", "HSU1RX"]},
+    "UART1" : {"functions":["U1TX", "U1RX"]},
+    "UART2" : {"functions":["U2TX", "U2RX"]},
+    "UART3" : {"functions":["U3TX", "U3RX"]},
+    "HSSPI" : {"functions":["SCK1","HSSDI1","HSSDO1","HSSS1"]},
+    "SPI1"  : {"functions":["SCK1","SDI1","SDO1","CS1"]},
+    "SPI2"  : {"functions":["SCK2","SDI2","SDO2","CS2"]},
+    "I2C1"  : {"functions":["SCL1","SDA1"]},
+    "I2C2"  : {"functions":["SCL2","SDA2"]},
+    "ICSP1" : {"functions":["PGC1","PGD1"]},
+    "ICSP2" : {"functions":["PGC2","PGD2"]},
+    "ICSP3" : {"functions":["PGC3","PGD3"]},
+    "ICSP4" : {"functions":["PGC4","PGD4"]},
+    "JTAG"  : {"functions":["TDI","TDO","TCK","TMS"]},
+    "CAN1"  : {"functions":["C1TX","C1RX"]},
+    "CAN2"  : {"functions":["C2TX","C2RX"]},
+    "Analog": {"functions":["AN"]},
+    "PTA"   : {"functions":["PTA_WLAN_ACTIVE","PTA_BT_PRIO","PTA_BT_ACTIVE","BT_CLK_OUT"]}}
+    
+    var ppsGroup={
+     "GP1":{"functions":["INT4","INT0","T1CK","T5CK","IC4","U1TX","U2RTS","U3RX","SDI1","SDO2","SDO1","C1TX","ECOL","ETXCLK","REFI","REFO1","OCFD","PTGP28","OC1"]},
+     "GP2":{"functions":["INT3","T2CK","T6CK","IC3","U1CTS","U2RX","U3TX","SDO1","SDI2","SDO2","C2TX","ETXERR","ERXD3","REFO2","OCFC","PTGP29","OC2"]},
+     "GP3":{"functions":["INT2","T3CK","T7CK","IC1","U1RX","U2CTS","U3RTS","CS1","C1RX","ECRS","ETXD3","ERXD2","REFO3","OCFB","PTGP30","OC3"]},
+     "GP4":{"functions":["INT1","T4CK","IC2","U1RTS","U2TX","U3CTS","CS2","C2RX","ETXD2","REFO4","OCFA","PTGP31","OC4"]}};
+    
+    var pads=[
+      //portA
+        {"port":"RA1"  ,"group":"GP2", "functions":["HSSS1"]},
+        {"port":"RA4"  ,"group":"GP1", "functions":["SCL1"]},
+          {"port":"RA5"  ,"group":"GP2", "functions":["SDA1"]},
+        {"port":"RA8"  ,               "functions":["HSU1RX"]},
+        {"port":"RA9"  ,               "functions":["HSU1TX"]},
+        {"port":"RA10" ,"group":"GP3", "functions":["INT0", "AN"]} ,
+        {"port":"RA11" ,"group":"GP4", "functions":["SCK2"]} ,
+        {"port":"RA13" ,"group":"GP2", "functions":["AN"]} ,
+        {"port":"RA14" ,"group":"GP3", "functions":["AN"]} ,
+        //PORTB
+          {"port":"RB1"  ,"group":"GP4", "functions":["ETH_EXCLK_OUT", "VBUSON", "AN"]},
+        {"port":"RB2"  ,"group":"GP3", "functions":["USBID", "AN", "PGD1 "]},
+        {"port":"RB4"  ,"group":"GP1", "functions":["PGC2", "AN"]},
+          {"port":"RB5"  ,"group":"GP2", "functions":["PGD2","RTCCOut", "AN"]},
+        {"port":"RB6"  ,"group":"GP3", "functions":["TMS","AN"]},
+        {"port":"RB7"  ,"group":"GP4", "functions":["TDO","AN"]},
+        {"port":"RB8"  ,"group":"GP1", "functions":["PGC4", "TCK", "AN"]},
+          {"port":"RB9"  ,"group":"GP2", "functions":["PGD4", "TDI", "AN"]},
+          {"port":"RB12" ,"group":"GP1", "functions":["AN"]},
+        //PORTC
+          {"port":"RC6"  ,"group":"GP3", "functions":["HSSCK1","SCK1"]},
+          {"port":"RC7"  ,"group":"GP4", "functions":["HSSDI1"]},
+          {"port":"RC8"  ,"group":"GP4", "functions":["HSSDO1"]},
+          {"port":"RC9"  ,"group":"GP1", "functions":["ERXERR"]},
+          {"port":"RC10" ,"group":"GP2", "functions":["ERXD1"]},
+          {"port":"RC11" ,"group":"GP3", "functions":["ERXD0"]},
+          {"port":"RC12" ,"group":"GP4", "functions":["ERXCLK", "ETH_CLK_OUT"]},
+        {"port":"RC13" ,"group":"GP1", "functions":["ETXEN"]},
+          {"port":"RC14" ,"group":"GP2", "functions":["ETXD1"]},
+          {"port":"RC15" ,"group":"GP3", "functions":["ETXD0"]},
+        //PORTK
+          {"port":"RK4"  ,"group":"GP1", "functions":["BT_CLK_OUT"]},
+        {"port":"RK5"  ,"group":"GP2", "functions":["PTA_WLAN_ACTIVE"]},
+          {"port":"RK6"  ,"group":"GP3", "functions":["PTA_BT_PRIO"]},
+          {"port":"RK7"  ,"group":"GP4", "functions":["PTA_BT_ACTIVE"]},
+          {"port":"RK12" ,"group":"GP1", "functions":["ERXDV"]},
+          {"port":"RK13" ,"group":"GP2", "functions":["EMDIO"]},
+        {"port":"RK14" ,"group":"GP3", "functions":["EMDC"]}
+    ]
+    
+    
+    function find_pads(peripheralSet){
+      //var retVarString="";
+      var retVar={};
+      var padList=[];
+      
+      if(peripheralSet.length>0){
+      for (argIndex=0;argIndex<peripheralSet.length;argIndex++){
+      peripheralName=peripheralSet[argIndex];
+      if(peripherals.hasOwnProperty(peripheralName)){
+        retVar[peripheralName]={};
+        //retVarString=JSON.stringify(retVar);
+        for (k=0;k<peripherals[peripheralName].functions.length;k++){
+          //console.log(peripherals[peripheralName].functions[k] + " : ")
+          for ( i in pads){
+            for ( j=0;j< pads[i].functions.length;j++){
+              if ( peripherals[peripheralName].functions[k]== pads[i].functions[j]){
+                //console.log(pads[i].port)
+                padList.push((pads[i].port))
+              }
+            }
+          }
+          retVar[peripheralName][peripherals[peripheralName].functions[k]]=padList
+          padList=[]
+          //console.log("\n");
+        }
+      }
+      }
+      }
+      return(retVar);
+    }
+    
+    //find non-PPS pins
+    function find_dedicated(padsList){
+      var nonPPSList=[];
+      
+      for ( peripheral in padsList){
+        for (functions in padsList[peripheral]){
+          for (pins in padsList[peripheral][functions]){
+            if(1==padsList[peripheral][functions].length){
+              //delete padsList[peripheral][functions]
+              nonPPSList.push(padsList[peripheral][functions][0])
+            }	
+          }
+        }
+      }
+      return (nonPPSList)
+    }
+    
+    //remove non-pps pins from master list 
+    function cleanup_dedicated(padsList,nonPPSList,flag){
+      
+      if(flag){
+        //First pass - remove dedicated pins
+        for ( peripheral in padsList){
+          for (functions in padsList[peripheral]){
+            for (pins in padsList[peripheral][functions]){
+              if(1==padsList[peripheral][functions].length){
+                delete padsList[peripheral][functions]
+              }	
+            }
+          }
+        }
+      }
+      
+      //second pass - remove pins from PPS groups
+      for ( peripheral in padsList){
+        for (functions in padsList[peripheral]){
+          for (pins in padsList[peripheral][functions]){
+            if(padsList[peripheral][functions].length>1){
+              //console.log(padsList[peripheral][functions])
+              for(i in nonPPSList){
+                index=padsList[peripheral][functions].indexOf(nonPPSList[i])
+                if(index>=0){
+                  padsList[peripheral][functions].splice(index,1);
+                }
+              }
+            }	
+          }
+        }
+      }
+      return (padsList)
+    }
+    
+    window.onload = function(){ 
+      /*Append groups and non-PPS functions*/
+        for(i in pads){
+      if(pads[i].hasOwnProperty("group")){
+        pads[i].functions=pads[i].functions.concat(ppsGroup[pads[i].group].functions)
+      }
+        }
+    
+        for (peripheral in peripherals) {
+            $("#checkboxes").append($("<label>").text(peripheral).prepend(
+                $("<input>").attr('type', 'checkbox').val(peripheral)
+                   .prop('checked', this.checked)
+            ));
+        };
+    
+        $("#checkboxes").on('change', '[type=checkbox]', function () {
+            var peripheralSet=[];
+          $('#checkboxes input[type=checkbox]:checked').each(function(index, value) {
+          peripheralSet.push($(this).val());
+        });
+        //console.log(peripheralSet);
+        $("#padSets").html(" ");
+    
+        var x=find_pads(peripheralSet)
+        var y=find_dedicated(x)
+            var z=cleanup_dedicated(x,y,(!$("#dedicated").is(':checked')))
+        console.log(JSON.stringify(z));		
+        $("#padSets").html(syntaxHighlight(JSON.stringify(z,undefined,4)));    
+        });
+    }
+
+    function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+    </script>
+    
+  <h1 style="text-align: center;">PPS Function selector for WFI32E01 Modules</h1>
+  <div style="margin: 20px;">
+    <div style="color:firebrick; font-size:large;margin-right: 200px;">
+      The Harmony3 configurator already has a pin manager that lets you configure PPS pins in software. This tool is meant mainly for system and Hardware designers who want to quickly explore 
+      the set of functionality that can be accomodated into a design using the WFI32E01 modules. 
+    </div>
+     <h2>Select SoC Functions</h2>
+     <div id="checkboxes" class="checkboxes"></div><p/>
+     
+     <div style="text-align: left; margin-left: 100px;margin-top: 30px;">
+       <b style="color: blueviolet;">display dedicted pins? <input type="checkbox" id="dedicated" value="dedicated"></b> 
+       <br/><i>change will be applied on next calculation</i>
+     </div>
+     
+     <h2>Pins available for configuration</h2>
+     <div id="padSets" style="white-space: pre;"></div>
+  </div>
+  <div style="text-align: center;font-style: italic;">This is a personal project created by Vysakh P Pillai. It is not affiliation to Microchip Technology</div>  
+  
+
+
+</body>
+
+</html>
